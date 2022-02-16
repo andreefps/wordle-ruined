@@ -15,13 +15,16 @@ export const MainPage = () => {
 
   useEffect(() => {
     setPossibleWords(words);
-  }, []);
+  });
 
   useEffect(() => {
     findPossibleWords(exact);
   }, [found, notFound]);
 
-  function findPossibleWords(letters?: Array<exact>) {
+  function findPossibleWords(
+    letters?: Array<exact>,
+    wrongPlaced?: Array<exact>
+  ) {
     let tempArray: Array<string> = words;
     let notFoundArray: Array<string> = notFound.split(",");
     let foundArray: Array<string> = found.split(",");
@@ -89,16 +92,13 @@ export const MainPage = () => {
 
   function handleExactChange(letter: string, position: number) {
     let newArray: Array<exact> = exact;
-    newArray.splice(position, 0, { letter, position });
-    setExact(newArray);
-    console.log(newArray);
-    findPossibleWords(newArray);
-  }
+    letter.trim() === ""
+      ? newArray.splice(
+          newArray.findIndex((item) => item.position === position),
+          1
+        )
+      : newArray.splice(position, 0, { letter, position });
 
-  function handleExactNotFound(letter: string, position: number) {
-    let newArray: Array<exact> = exact;
-    newArray.splice(position, 0, { letter, position });
-    setExactNotFound(newArray);
     console.log(newArray);
     findPossibleWords(newArray);
   }
@@ -153,47 +153,15 @@ export const MainPage = () => {
         />
         <h3>Digite aqui as letras nao encontradas</h3>
         <input type="text" onChange={(e) => setNotFound(e.target.value)} />
-        <h3>Digite aqui as letras que vc sabe que nao sao na posicao</h3>
-        1-{" "}
-        <input
-          maxLength={1}
-          onChange={(e) => handleExactNotFound(e.target.value, 0)}
-          type="text"
-        />
-        <br />
-        2-{" "}
-        <input
-          maxLength={1}
-          onChange={(e) => handleExactNotFound(e.target.value, 1)}
-          type="text"
-        />
-        <br />
-        3-{" "}
-        <input
-          maxLength={1}
-          onChange={(e) => handleExactNotFound(e.target.value, 2)}
-          type="text"
-        />
-        <br />
-        4-{" "}
-        <input
-          maxLength={1}
-          onChange={(e) => handleExactNotFound(e.target.value, 3)}
-          type="text"
-        />
-        <br />
-        5-{" "}
-        <input
-          maxLength={1}
-          onChange={(e) => handleExactNotFound(e.target.value, 4)}
-          type="text"
-        />
       </div>
       <br />
       <br />
       <br />
-      <div>Possiveis palavras:</div>
-      <div style={{ maxWidth: "400px" }}>{possibleWords + ", "}</div>
+      <div style={{ maxWidth: "400px" }}>
+        {possibleWords.length > 50
+          ? "Preciso de mais informacao"
+          : `Possiveis palavras : ${possibleWords},`}
+      </div>
     </>
   );
 };
